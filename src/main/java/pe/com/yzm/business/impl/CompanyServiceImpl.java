@@ -76,6 +76,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
+     * This method is used to find all companies.
+     *
+     * @param headerRequest The request header containing transaction details
+     * @return A Flux of CompanyResponse containing all companies
+     */
+    @Override
+    public Flux<CompanyResponse> findAllCompanyByUser(HeaderRequest headerRequest, Long userId) {
+        LoggerUtil.logInput(headerRequest.getTransactionId(), headerRequest.toString(), null);
+        return companyRepository.findAllByUserId(userId)
+                .map(companyMapper::companytoCompanyResponse)
+                .doOnNext(response ->
+                        LoggerUtil.logOutput(headerRequest.getTransactionId(), headerRequest.toString(), response.toString()))
+                .doOnError(error -> LoggerUtil.logError(headerRequest.getTransactionId(), error));
+    }
+
+    /**
      * This method is used to save a new company.
      *
      * @param headerRequest  The request header containing transaction details

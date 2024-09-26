@@ -40,6 +40,14 @@ public interface CompanyService {
     Flux<CompanyResponse> findAllCompany(HeaderRequest headerRequest);
 
     /**
+     * Finds all companies by user.
+     *
+     * @param headerRequest The request header containing necessary context information.
+     * @return A Flux of CompanyResponse containing all the companies.
+     */
+    Flux<CompanyResponse> findAllCompanyByUser(HeaderRequest headerRequest, Long userId);
+
+    /**
      * Saves a new company.
      *
      * @param headerRequest The request header containing necessary context information.

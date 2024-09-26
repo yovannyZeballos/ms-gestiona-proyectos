@@ -44,6 +44,17 @@ public class CompanyController {
         return companyService.findAllCompany(headerRequest);
     }
 
+    @GetMapping("/listar/usuario/{id}")
+    public Flux<CompanyResponse> findAllCompaniesByUser(
+            @RequestHeader(value = HeadersConstant.TRANSACTION_ID) String idTransaction,
+            @PathVariable(value = "id") Long id
+    ) {
+        final var headerRequest = HeaderRequest.builder()
+                .transactionId(idTransaction)
+                .build();
+        return companyService.findAllCompanyByUser(headerRequest, id);
+    }
+
     @GetMapping("/obtener/{id}")
     public Mono<CompanyResponse> findCompanyById(
         @RequestHeader(value = HeadersConstant.TRANSACTION_ID) String idTransaction,

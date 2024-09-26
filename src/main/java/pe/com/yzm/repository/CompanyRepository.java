@@ -2,6 +2,7 @@ package pe.com.yzm.repository;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import pe.com.yzm.model.Company;
+import reactor.core.publisher.Flux;
 
 /**
  * <b>Class</b>: CompanyRepository <br/>
@@ -17,4 +18,6 @@ import pe.com.yzm.model.Company;
  * </ul>
  */
 public interface CompanyRepository extends ReactiveCrudRepository<Company, Long> {
+
+    Flux<Company> findAllByUserId(Long userId);
 }
