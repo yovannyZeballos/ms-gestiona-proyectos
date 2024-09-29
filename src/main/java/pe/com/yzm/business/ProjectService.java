@@ -3,6 +3,7 @@ package pe.com.yzm.business;
 import pe.com.yzm.core.model.HeaderRequest;
 import pe.com.yzm.expose.request.ProjectCreateRequest;
 import pe.com.yzm.expose.request.ProjectUpdateRequest;
+import pe.com.yzm.expose.response.ProjectCompanyResponse;
 import pe.com.yzm.expose.response.ProjectResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,12 +24,17 @@ import reactor.core.publisher.Mono;
 public interface ProjectService {
 
     /**
-     * Fetches all projects.
+     * Fetches all projects that belong to a user.
+     *
+     * This method first fetches all companies that belong to the user specified by the userId parameter.
+     * Then, for each company, it fetches all projects that belong to that company.
+     * The result is a Flux of ProjectResponse objects, each representing a project that belongs to a company of the user.
      *
      * @param headerRequest The header request containing necessary request metadata.
-     * @return A Flux stream of ProjectResponse objects representing all projects.
+     * @param userId The ID of the user for whom to fetch the projects.
+     * @return A Flux of ProjectResponse objects representing the projects found.
      */
-    Flux<ProjectResponse> findAllProjects(HeaderRequest headerRequest);
+    Flux<ProjectCompanyResponse> findAllProjectsByUserId(HeaderRequest headerRequest, Long userId);
 
     /**
      * Fetches a project by its ID.

@@ -3,12 +3,14 @@ package pe.com.yzm.business.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import pe.com.yzm.business.CompanyService;
 import pe.com.yzm.business.ProjectService;
 import pe.com.yzm.core.exception.BusinessException;
 import pe.com.yzm.core.logger.LoggerUtil;
 import pe.com.yzm.core.model.HeaderRequest;
 import pe.com.yzm.expose.request.ProjectCreateRequest;
 import pe.com.yzm.expose.request.ProjectUpdateRequest;
+import pe.com.yzm.expose.response.ProjectCompanyResponse;
 import pe.com.yzm.expose.response.ProjectResponse;
 import pe.com.yzm.mapper.ProjectMapper;
 import pe.com.yzm.repository.ProjectRepository;
@@ -38,18 +40,26 @@ public class ProjectServiceImpl implements ProjectService {
     // Reference to the ProjectRepository to perform CRUD operations
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+    private final CompanyService companyService;
 
     /**
-     * Fetches all projects.
+     * Fetches all projects that belong to a user.
+     *
+     * This method first fetches all companies that belong to the user specified by the userId parameter.
+     * Then, for each company, it fetches all projects that belong to that company.
+     * The result is a Flux of ProjectResponse objects, each representing a project that belongs to a company of the user.
      *
      * @param headerRequest The header request containing necessary request metadata.
-     * @return A Flux stream of ProjectResponse objects representing all projects.
+     * @param userId The ID of the user for whom to fetch the projects.
+     * @return A Flux of ProjectResponse objects representing the projects found.
      */
     @Override
-    public Flux<ProjectResponse> findAllProjects(HeaderRequest headerRequest) {
-        LoggerUtil.logInput(headerRequest.getTransactionId(), headerRequest.toString(), null);
-        return projectRepository.findAll()
-                .map(projectMapper::projectToProjectResponse)
+    public Flux<ProjectCompanyResponse> findAllProjectsByUserId(HeaderRequest headerRequest, Long userId) {
+        LoggerUtil.logInput(headerRequest.getTransactionId(), headerRequest.toString(), userId);
+
+        return companyService.findAllCompanyByUser(headerRequest, userId)
+                .flatMap(company -> projectRepository.findAllByCompanyId(company.getId())
+                        .map(project -> projectMapper.projectToProjectCompanyResponse(project, company.getName())))
                 .doOnNext(response ->
                         LoggerUtil.logOutput(headerRequest.getTransactionId(), headerRequest.toString(), response.toString()))
                 .doOnError(error -> LoggerUtil.logError(headerRequest.getTransactionId(), error));

@@ -3,7 +3,9 @@ package pe.com.yzm.mapper;
 import org.mapstruct.Mapper;
 import pe.com.yzm.expose.request.ProjectCreateRequest;
 import pe.com.yzm.expose.request.ProjectUpdateRequest;
+import pe.com.yzm.expose.response.ProjectCompanyResponse;
 import pe.com.yzm.expose.response.ProjectResponse;
+import pe.com.yzm.model.Company;
 import pe.com.yzm.model.Project;
 
 /**
@@ -50,5 +52,21 @@ public abstract class ProjectMapper {
         projectUpdate.setName(projectRequest.getName());
         projectUpdate.setCompanyId(projectRequest.getCompanyId());
         return projectUpdate;
+    }
+
+    /**
+     * Converts a Project entity to a ProjectCompanyResponse DTO.
+     *
+     * @param project The Project entity to be converted.
+     * @param companyName The Company entity to be converted.
+     * @return A ProjectCompanyResponse DTO representing the given Project entity and Company entity.
+     */
+    public ProjectCompanyResponse projectToProjectCompanyResponse(Project project, String companyName) {
+        return ProjectCompanyResponse.builder()
+                .id(project.getId())
+                .projectName(project.getName())
+                .companyName(companyName)
+                .companyId(project.getCompanyId())
+                .build();
     }
 }

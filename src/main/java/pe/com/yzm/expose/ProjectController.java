@@ -8,6 +8,7 @@ import pe.com.yzm.core.model.HeaderRequest;
 import pe.com.yzm.core.model.HeadersConstant;
 import pe.com.yzm.expose.request.ProjectCreateRequest;
 import pe.com.yzm.expose.request.ProjectUpdateRequest;
+import pe.com.yzm.expose.response.ProjectCompanyResponse;
 import pe.com.yzm.expose.response.ProjectResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,14 +33,15 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @GetMapping("/listar")
-    public Flux<ProjectResponse> findAllProjects(
-            @RequestHeader(value = HeadersConstant.TRANSACTION_ID) String idTransaction
+    @GetMapping("/listar/user/{id}")
+    public Flux<ProjectCompanyResponse> findAllProjects(
+            @RequestHeader(value = HeadersConstant.TRANSACTION_ID) String idTransaction,
+            @PathVariable(value = "id") Long id
     ) {
         final var headerRequest = HeaderRequest.builder()
                 .transactionId(idTransaction)
                 .build();
-        return projectService.findAllProjects(headerRequest);
+        return projectService.findAllProjectsByUserId(headerRequest, id);
     }
 
     @GetMapping("/obtener/{id}")
